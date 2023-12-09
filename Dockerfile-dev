@@ -1,20 +1,10 @@
-FROM maven:3.8.4-openjdk-17 AS dependencies
+FROM maven:3.8.4-openjdk-17 AS builder
 
 WORKDIR /app
 
 COPY pom.xml .
 
 RUN mvn dependency:go-offline
-
-FROM maven:3.8.4-openjdk-17 AS external-libraries
-
-WORKDIR /app
-
-COPY --from=dependencies /root/.m2 /root/.m2
-
-FROM dependencies AS builder
-
-WORKDIR /app
 
 COPY src ./src
 
