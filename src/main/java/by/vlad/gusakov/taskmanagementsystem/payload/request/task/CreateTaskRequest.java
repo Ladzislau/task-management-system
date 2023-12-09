@@ -27,8 +27,9 @@ public class CreateTaskRequest {
     @Size(max = 2500, message = "Описание задачи не может превышать 2500 символов")
     private String description;
 
-    @NotEmpty(message = "Необходимо указать приоритет задачи")
-    private String priority;
+    @NotNull(message = "Необходимо указать приоритет задачи")
+    @Enumerated(EnumType.STRING)
+    private Task.Priority priority;
 
     @Digits(integer = 19, fraction = 0, message = "Некорректное ID исполнителя")
     private Long assigneeId;

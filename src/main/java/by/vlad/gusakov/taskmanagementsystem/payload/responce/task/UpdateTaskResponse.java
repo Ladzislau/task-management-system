@@ -14,5 +14,5 @@ public class UpdateTaskResponse {
 
     private String message;
 
-    private Task updatedTask;
+    private TaskResponse updatedTask;
 }

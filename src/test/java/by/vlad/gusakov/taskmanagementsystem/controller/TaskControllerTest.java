@@ -21,6 +21,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.Date;
+
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -75,14 +77,14 @@ class TaskControllerTest {
     @Test
     @WithMockUser
     void getTasksById_validRequest_200TaskResponseReturned() throws Exception {
-        TaskResponse taskResponse = TestDataFactory.createTaskResponse();
+        TaskResponse taskResponse = TestDataFactory.createTaskResponse(new Date());
 
         when(taskService.getTaskById(any())).thenReturn(taskResponse);
 
         mockMvc.perform(get(TASK_BY_ID_ENDPOINT)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.task", notNullValue()));
+                .andExpect(jsonPath("$", aMapWithSize(10)));
     }
 
     @Test
@@ -167,13 +169,17 @@ class TaskControllerTest {
     @WithMockUser
     void getCommentById_validRequest_200CommentListResponseReturned() throws Exception {
         CommentResponse commentResponse = TestDataFactory.createCommentResponse();
+        commentResponse.setCreatedAt(new Date());
 
         when(commentService.getCommentById(any(), any())).thenReturn(commentResponse);
 
         mockMvc.perform(get(TASK_COMMENT_BY_ID_ENDPOINT)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.comment", notNullValue()));
+                .andExpect(jsonPath("$.commentId", notNullValue()))
+                .andExpect(jsonPath("$.text", notNullValue()))
+                .andExpect(jsonPath("$.createdAt", notNullValue()))
+                .andExpect(jsonPath("$.taskId", notNullValue()));
     }
 
     @Test

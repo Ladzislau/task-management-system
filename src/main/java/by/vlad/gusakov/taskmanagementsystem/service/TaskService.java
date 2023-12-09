@@ -18,6 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class TaskService {
 
@@ -52,15 +55,17 @@ public class TaskService {
             default -> tasks = taskRepository.findByAuthorOrAssigneeOrderByCreatedAtDesc(user, user, pageable);
         }
 
-        return new TaskPageResponse(pageable.getPageNumber(), tasks.getTotalPages(), tasks.getTotalElements(), tasks.getContent());
+        List<TaskResponse> taskResponses = new ArrayList<>();
+        tasks.getContent().forEach(c -> taskResponses.add(conversionService.convert(c, TaskResponse.class)));
+
+        return new TaskPageResponse(pageable.getPageNumber(), tasks.getTotalPages(), tasks.getTotalElements(), taskResponses);
     }
 
     public TaskResponse getTaskById(Long taskId) throws TaskNotFoundException {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Ошибка загрузки задачи", "Задачи не существует!"));
-        Hibernate.initialize(task.getComments());
 
-        return new TaskResponse(task);
+        return conversionService.convert(task, TaskResponse.class);
     }
 
     public CreateTaskResponse createTask(CreateTaskRequest createTaskRequest) throws UserNotFoundException, AuthenticationException {
@@ -71,7 +76,8 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        return new CreateTaskResponse("Задача успешно создана!", savedTask);
+        return new CreateTaskResponse("Задача успешно создана!",
+                conversionService.convert(savedTask, TaskResponse.class));
     }
 
     public UpdateTaskResponse updateTask(Long taskId, UpdateTaskRequest updateTaskRequest) throws UnauthorizedModificationException, UserNotFoundException, TaskNotFoundException, AuthenticationException {
@@ -86,7 +92,7 @@ public class TaskService {
 
         taskRepository.save(updatedTask);
 
-        return new UpdateTaskResponse("Задача успешно обновлена!", updatedTask);
+        return new UpdateTaskResponse("Задача успешно обновлена!", conversionService.convert(updatedTask, TaskResponse.class));
     }
 
     public DeleteTaskResponse deleteTaskById(Long taskId) throws UserNotFoundException, TaskNotFoundException, UnauthorizedModificationException, AuthenticationException {

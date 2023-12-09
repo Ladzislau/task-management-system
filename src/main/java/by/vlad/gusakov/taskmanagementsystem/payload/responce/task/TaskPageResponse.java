@@ -21,5 +21,5 @@ public class TaskPageResponse {
 
     private Long totalElements;
 
-    private List<Task> tasks;
+    private List<TaskResponse> tasks;
 }

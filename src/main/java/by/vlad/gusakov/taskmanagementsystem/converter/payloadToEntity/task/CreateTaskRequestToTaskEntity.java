@@ -11,11 +11,9 @@ public class CreateTaskRequestToTaskEntity implements Converter<CreateTaskReques
     public Task convert(CreateTaskRequest source) {
         Task task = new Task();
 
-        Task.Priority priority = Task.Priority.forValue(source.getPriority().toLowerCase());
-
         task.setTitle(source.getTitle());
         task.setDescription(source.getDescription());
-        task.setPriority(priority);
+        task.setPriority(source.getPriority());
         task.setStatus(Task.Status.NEW);
 
         return task;

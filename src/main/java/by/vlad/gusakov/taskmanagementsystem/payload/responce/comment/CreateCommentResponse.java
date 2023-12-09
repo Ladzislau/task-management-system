@@ -1,6 +1,5 @@
 package by.vlad.gusakov.taskmanagementsystem.payload.responce.comment;
 
-import by.vlad.gusakov.taskmanagementsystem.model.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +13,6 @@ public class CreateCommentResponse {
 
     private String message;
 
-    private Comment createdComment;
+    private CommentResponse createdComment;
+
 }

@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,7 +80,6 @@ class CommentServiceTest {
 
         assertNotNull(response);
         assertEquals("Комментарий успешно опубликован!", response.getMessage());
-        assertEquals(testComment, response.getCreatedComment());
     }
 
     @Test
@@ -110,7 +110,6 @@ class CommentServiceTest {
 
         assertNotNull(response);
         assertEquals("Комментарий успешно отредактирован!", response.getMessage());
-        assertEquals(updatedComment, response.getUpdatedComment());
     }
 
     @Test
@@ -190,14 +189,16 @@ class CommentServiceTest {
     void getCommentById_shouldReturnCommentResponse() throws TaskNotFoundException, CommentNotFoundException {
         Long taskId = 1L;
         Long commentId = 1L;
+        CommentResponse expectedResponse = new CommentResponse(1L, "test", new Date(), taskId);
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(testTask));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(testComment));
+        when(conversionService.convert(testComment, CommentResponse.class)).thenReturn(expectedResponse);
 
         CommentResponse response = commentService.getCommentById(taskId, commentId);
 
-        assertEquals(testComment.getId(), response.getComment().getId());
-        assertEquals(testComment.getText(), response.getComment().getText());
+        assertEquals(expectedResponse.getCommentId(), response.getCommentId());
+        assertEquals(expectedResponse.getText(), response.getText());
     }
 
     @Test

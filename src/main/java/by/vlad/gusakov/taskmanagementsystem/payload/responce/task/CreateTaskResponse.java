@@ -14,5 +14,5 @@ public class CreateTaskResponse {
 
     private String message;
 
-    private Task createdTask;
+    private TaskResponse createdTask;
 }

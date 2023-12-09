@@ -14,5 +14,5 @@ public class UpdateCommentResponse {
 
     private String message;
 
-    private Comment updatedComment;
+    private CommentResponse updatedComment;
 }

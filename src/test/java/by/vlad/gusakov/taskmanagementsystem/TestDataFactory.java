@@ -13,6 +13,7 @@ import by.vlad.gusakov.taskmanagementsystem.payload.responce.auth.Authentication
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.comment.*;
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.task.*;
 
+import java.util.Date;
 import java.util.List;
 
 public class TestDataFactory {
@@ -48,13 +49,34 @@ public class TestDataFactory {
         return comment;
     }
 
+    public static Comment createCommentEntity() {
+        User user = new User();
+        user.setId(1L);
+
+        Task task = new Task();
+        task.setId(2L);
+
+        return new Comment(1L, "text", null, user, task);
+    }
+
     public static Task createNewTask(){
         Task task = new Task();
         task.setTitle("Test Task");
         task.setDescription("Description of the task");
-        task.setPriority(Task.Priority.HIGH);
         task.setStatus(Task.Status.NEW);
+        task.setPriority(Task.Priority.HIGH);
+
         return task;
+    }
+
+    public static Task createNewTask(Date date){
+        User author = new User();
+        author.setId(2L);
+
+        User assignee = new User();
+        assignee.setId(3L);
+
+        return new Task(1L, "", "", Task.Status.NEW, Task.Priority.HIGH, date, date, date, null,author, assignee);
     }
 
     public static Task createUpdatedTask(){
@@ -71,7 +93,7 @@ public class TestDataFactory {
 
     public static CreateTaskRequest createCreateTaskRequest() {
         return new CreateTaskRequest("Test Task", "Description of the task",
-                Task.Priority.HIGH.toValue(), 1L);
+                Task.Priority.HIGH, 1L);
     }
 
     public static UpdateTaskRequest createUpdateTaskRequest() {
@@ -103,33 +125,33 @@ public class TestDataFactory {
     }
 
     public static CreateTaskResponse createCreateTaskResponse(){
-        return new CreateTaskResponse("Task was created", new Task());
+        return new CreateTaskResponse("Task was created", new TaskResponse());
     }
 
     public static UpdateTaskResponse createUpdateTaskResponse(){
-        return new UpdateTaskResponse("Task was updated", new Task());
+        return new UpdateTaskResponse("Task was updated", new TaskResponse());
     }
 
     public static DeleteTaskResponse createDeleteTaskResponse(){
         return new DeleteTaskResponse("Task was deleted");
     }
 
-    public static TaskResponse createTaskResponse(){
-        return new TaskResponse(new Task());
+    public static TaskResponse createTaskResponse(Date date){
+        return new TaskResponse(1L, "", "", Task.Status.NEW, Task.Priority.HIGH, date, date, date, 2L, 3L);
     }
 
     public static TaskPageResponse createTaskPageResponse(){
-        Task task = new Task();
-        task.setStatus(Task.Status.IN_PROGRESS);
-        return new TaskPageResponse(1, 5, 50L, List.of(task, new Task()));
+        TaskResponse taskResponse = new TaskResponse();
+        taskResponse.setStatus(Task.Status.IN_PROGRESS);
+        return new TaskPageResponse(1, 5, 50L, List.of(taskResponse, new TaskResponse()));
     }
 
     public static CreateCommentResponse createCreateCommentResponse(){
-        return new CreateCommentResponse("Comment was created", new Comment());
+        return new CreateCommentResponse("Comment was created", new CommentResponse());
     }
 
     public static UpdateCommentResponse createUpdateCommentResponse(){
-        return new UpdateCommentResponse("Comment was updated", new Comment());
+        return new UpdateCommentResponse("Comment was updated", new CommentResponse());
     }
 
     public static DeleteCommentResponse createDeleteCommentResponse(){
@@ -137,11 +159,11 @@ public class TestDataFactory {
     }
 
     public static CommentResponse createCommentResponse(){
-        return new CommentResponse(new Comment());
+        return new CommentResponse(1L, "text", null, 2L);
     }
 
     public static CommentPageResponse createCommentPageResponse(){
-        return new CommentPageResponse(1, 5, 50L, List.of(new Comment(), new Comment()));
+        return new CommentPageResponse(1, 5, 50L, List.of(new CommentResponse(), new CommentResponse()));
     }
 
 }

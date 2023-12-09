@@ -16,7 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class CommentService {
@@ -50,7 +52,8 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
-        return new CreateCommentResponse("Комментарий успешно опубликован!", savedComment);
+        return new CreateCommentResponse("Комментарий успешно опубликован!",
+                conversionService.convert(savedComment, CommentResponse.class));
     }
 
     public UpdateCommentResponse updateComment(Long taskId, Long commentId, UpdateCommentRequest updateCommentRequest) throws CommentNotFoundException, UnauthorizedModificationException, UserNotFoundException, AuthenticationException, TaskNotFoundException {
@@ -68,7 +71,8 @@ public class CommentService {
 
         commentRepository.save(updatedComment);
 
-        return new UpdateCommentResponse("Комментарий успешно отредактирован!", updatedComment);
+        return new UpdateCommentResponse("Комментарий успешно отредактирован!",
+                conversionService.convert(updatedComment, CommentResponse.class));
     }
 
     public DeleteCommentResponse deleteComment(Long commentId) throws CommentNotFoundException, UnauthorizedModificationException, UserNotFoundException, AuthenticationException {
@@ -89,7 +93,7 @@ public class CommentService {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("Невозможно загрузить комментарий (id)", "Комментария не существует!"));
-        return new CommentResponse(comment);
+        return conversionService.convert(comment, CommentResponse.class);
     }
 
     public CommentPageResponse getCommentsByTask(Long taskId, Pageable pageable) throws TaskNotFoundException {
@@ -98,7 +102,11 @@ public class CommentService {
 
         Page<Comment> comments = commentRepository.findByRelatedTaskOrderByCreatedAtDesc(relatedTask, pageable);
 
-        return new CommentPageResponse(pageable.getPageNumber(), comments.getTotalPages(), comments.getTotalElements(), comments.getContent());
+        List<CommentResponse> commentResponses = new ArrayList<>();
+        comments.getContent().forEach(c -> commentResponses.add(conversionService.convert(c, CommentResponse.class)));
+
+        return new CommentPageResponse(pageable.getPageNumber(), comments.getTotalPages(),
+                comments.getTotalElements(), commentResponses);
     }
 
 

@@ -1,9 +1,6 @@
 package by.vlad.gusakov.taskmanagementsystem.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "task")
@@ -74,28 +73,6 @@ public class Task {
 
     public enum Priority {
         LOW, MEDIUM, HIGH, CRITICAL;
-
-        private static final Map<String, Priority> namesMap = new HashMap<>();
-
-        static {
-            namesMap.put("low", LOW);
-            namesMap.put("medium", MEDIUM);
-            namesMap.put("high", HIGH);
-            namesMap.put("critical", CRITICAL);
-        }
-
-        public static Priority forValue(String value) {
-            return namesMap.get(value.toLowerCase());
-        }
-
-        public String toValue() {
-            for (Map.Entry<String, Priority> entry : namesMap.entrySet()) {
-                if (entry.getValue() == this)
-                    return entry.getKey();
-            }
-
-            return null;
-        }
     }
 
 

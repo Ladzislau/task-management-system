@@ -20,5 +20,5 @@ public class CommentPageResponse {
 
     private Long totalElements;
 
-    private List<Comment> comments;
+    private List<CommentResponse> comments;
 }

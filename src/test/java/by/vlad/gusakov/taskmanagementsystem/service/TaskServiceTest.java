@@ -11,7 +11,6 @@ import by.vlad.gusakov.taskmanagementsystem.payload.responce.task.TaskResponse;
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.task.UpdateTaskResponse;
 import by.vlad.gusakov.taskmanagementsystem.repository.TaskRepository;
 import by.vlad.gusakov.taskmanagementsystem.util.TaskUtil;
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,17 +71,20 @@ class TaskServiceTest {
         Long userId = 1L;
         String filterRole = "author";
         Pageable pageable = mock(Pageable.class);
-        Page<Task> page = new PageImpl<>(testTasks);
+        Page<Task> page = mock(Page.class);
 
         when(userService.findById(userId)).thenReturn(testUser);
         when(taskRepository.findByAuthorOrderByCreatedAtDesc(testUser, pageable)).thenReturn(page);
+        when(page.getContent()).thenReturn(testTasks);
 
         TaskPageResponse response = taskService.getUserTasks(userId, filterRole, pageable);
 
         assertEquals(pageable.getPageNumber(), response.getCurrentPage());
+        assertEquals(page.getTotalPages(), response.getTotalPage());
         assertEquals(page.getTotalElements(), response.getTotalElements());
         assertEquals(testTasks.size(), response.getTasks().size());
     }
+
 
     @Test
     void getUserTasks_filterByAssignee_shouldReturnTaskListResponse() throws Exception {
@@ -116,16 +118,17 @@ class TaskServiceTest {
     }
 
     @Test
-    void getTaskById_taskExists_shouldReturnTaskResponseWithInitializedComments() throws Exception {
+    void getTaskById_taskExists_shouldReturnTaskResponse() throws Exception {
         Long taskId = 1L;
         Task mockTask = new Task();
+        TaskResponse expected = new TaskResponse();
+
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(mockTask));
+        when(conversionService.convert(mockTask, TaskResponse.class)).thenReturn(expected);
 
         TaskResponse taskResponse = taskService.getTaskById(taskId);
 
         assertNotNull(taskResponse);
-        assertEquals(mockTask, taskResponse.getTask());
-        assertTrue(Hibernate.isInitialized(mockTask.getComments()));
     }
 
     @Test
@@ -143,16 +146,18 @@ class TaskServiceTest {
         UpdateTaskRequest updateTaskRequest = new UpdateTaskRequest();
         Task oldTask = new Task();
         Task updatedTask = new Task();
+        TaskResponse expected = new TaskResponse();
 
         when(userService.getCurrentUser()).thenReturn(testUser);
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(oldTask));
         when(conversionService.convert(updateTaskRequest, Task.class)).thenReturn(updatedTask);
+        when(conversionService.convert(updatedTask, TaskResponse.class)).thenReturn(expected);
 
         UpdateTaskResponse updateTaskResponse = taskService.updateTask(taskId, updateTaskRequest);
 
         assertNotNull(updateTaskResponse);
         assertEquals("Задача успешно обновлена!", updateTaskResponse.getMessage());
-        assertEquals(updatedTask, updateTaskResponse.getUpdatedTask());
+        assertEquals(expected, updateTaskResponse.getUpdatedTask());
         verify(taskRepository, times(1)).save(updatedTask);
     }
 
