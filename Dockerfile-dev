@@ -7,12 +7,12 @@ COPY pom.xml .
 
 RUN mvn dependency:go-offline
 
-##Копирование зависимостей из локального проекта
-#FROM maven:3.8.4-openjdk-17 AS external-libraries
-#
-#WORKDIR /app
-#
-#COPY --from=dependencies /root/.m2 /root/.m2
+#Копирование зависимостей из локального проекта
+FROM maven:3.8.4-openjdk-17 AS external-libraries
+
+WORKDIR /app
+
+COPY --from=dependencies /root/.m2 /root/.m2
 
 #Сборка приложения
 FROM dependencies AS builder
@@ -29,6 +29,3 @@ FROM maven:3.8.4-openjdk-17 AS development
 WORKDIR /app
 
 COPY --from=builder /app/target/task-management-system-0.0.1-SNAPSHOT.jar .
-
-
-#todo посмотреть как себя ведет сборка при добавлении новых зависимостей и загружает ли она их тоже

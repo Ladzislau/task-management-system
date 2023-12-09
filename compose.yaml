@@ -1,10 +1,25 @@
+version: '1.0.1'
+
 services:
+  app:
+    build:
+      context: .
+      target: development
+      dockerfile: Dockerfile-dev
+    restart: always
+    ports:
+      - '8080:8080'
+    command: java -jar /app/task-management-system-0.0.1-SNAPSHOT.jar
+    volumes:
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
   mysql:
     image: 'mysql:latest'
+    restart: always
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - 'MYSQL_DATABASE=task_db'
+      - 'MYSQL_ROOT_PASSWORD=root1234'
     ports:
       - '3306'
+    volumes:
+      - ./mysql/init-scripts:/docker-entrypoint-initdb.d
