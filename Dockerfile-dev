@@ -1,4 +1,4 @@
-FROM maven:3.8.4-openjdk-17 AS builder
+FROM maven:3.8.4-openjdk-17 AS development
 
 WORKDIR /app
 
@@ -10,8 +10,4 @@ COPY src ./src
 
 RUN mvn clean package
 
-FROM maven:3.8.4-openjdk-17 AS development
-
-WORKDIR /app
-
-COPY --from=builder /app/target/task-management-system-0.0.1-SNAPSHOT.jar .
+CMD ["java", "-jar", "/app/target/task-management-system-0.0.1-SNAPSHOT.jar"]
