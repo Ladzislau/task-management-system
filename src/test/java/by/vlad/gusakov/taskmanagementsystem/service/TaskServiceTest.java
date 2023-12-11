@@ -95,7 +95,7 @@ class TaskServiceTest {
         when(userService.getCurrentUser()).thenReturn(testUser);
         when(taskRepository.findByAssigneeOrderByCreatedAtDesc(testUser, pageable)).thenReturn(page);
 
-        TaskPageResponse response = taskService.getUserTasks(null, filterRole, pageable);
+        TaskPageResponse response = taskService.getUserTasks(0L, filterRole, pageable);
 
         assertEquals(pageable.getPageNumber(), response.getCurrentPage());
         assertEquals(page.getTotalElements(), response.getTotalElements());
@@ -110,7 +110,7 @@ class TaskServiceTest {
         when(userService.getCurrentUser()).thenReturn(testUser);
         when(taskRepository.findByAuthorOrAssigneeOrderByCreatedAtDesc(testUser, testUser, pageable)).thenReturn(page);
 
-        TaskPageResponse response = taskService.getUserTasks(null, "otherRole", pageable);
+        TaskPageResponse response = taskService.getUserTasks(0L, "otherRole", pageable);
 
         assertEquals(pageable.getPageNumber(), response.getCurrentPage());
         assertEquals(page.getTotalElements(), response.getTotalElements());
