@@ -1,5 +1,6 @@
 package by.vlad.gusakov.taskmanagementsystem.payload.responce.comment;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,28 @@ import java.util.Objects;
 @Setter
 public class CommentResponse {
 
+    @Schema(
+            description = "ID комментария",
+            example = "1"
+    )
     private Long commentId;
 
+    @Schema(
+            description = "Текст комментария",
+            example = "Ок! Справлюсь максимально быстро"
+    )
     private String text;
 
+    @Schema(
+            description = "Дата публикации комментария",
+            example = "2023-12-09T11:23:55.952Z"
+    )
     private Date createdAt;
 
+    @Schema(
+            description = "ID задачи, к которой оставлен комментарий",
+            example = "10"
+    )
     private Long taskId;
 
     @Override

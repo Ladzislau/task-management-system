@@ -1,8 +1,7 @@
 package by.vlad.gusakov.taskmanagementsystem.payload.responce.task;
 
 import by.vlad.gusakov.taskmanagementsystem.model.Task;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,24 +16,64 @@ import java.util.Objects;
 @Setter
 public class TaskResponse {
 
+    @Schema(
+            description = "ID задачи",
+            example = "1"
+    )
     private Long id;
 
+    @Schema(
+            description = "Заголовок задачи",
+            example = "Фикс багов в проекте"
+    )
     private String title;
 
+    @Schema(
+            description = "Описание задачи",
+            example = "Пофиксить баги в проекте"
+    )
     private String description;
 
+    @Schema(
+            description = "Статус задачи",
+            example = "IN_PROGRESS"
+    )
     private Task.Status status;
 
+    @Schema(
+            description = "Приоритет задачи",
+            example = "MEDIUM"
+    )
     private Task.Priority priority;
 
+    @Schema(
+            description = "Дата публикации комментария",
+            example = "2023-12-07T14:28:21.952Z"
+    )
     private Date createdAt;
 
+    @Schema(
+            description = "Дата обновления комментария",
+            example = "2023-12-09T11:23:55.952Z"
+    )
     private Date updatedAt;
 
+    @Schema(
+            description = "Дата назначения текущего исполнителя задачи",
+            example = "2023-12-09T11:23:55.952Z"
+    )
     private Date assignedAt;
 
+    @Schema(
+            description = "ID автора задачи",
+            example = "8"
+    )
     private Long authorId;
 
+    @Schema(
+            description = "ID исполнителя задачи",
+            example = "15"
+    )
     private Long assigneeId;
 
     @Override
