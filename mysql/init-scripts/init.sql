@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS comment
     id         bigint primary key auto_increment,
     text       varchar(400) not null,
     created_at timestamp    not null default current_timestamp,
-    author_id  bigint       not null references user (id) on delete cascade,
+    author_id  bigint       not null references user (id) on delete set null,
     task_id    bigint       not null references task (id) on delete cascade
 );
 
