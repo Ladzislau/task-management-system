@@ -41,10 +41,10 @@ public class TaskService {
 
     public TaskPageResponse getUserTasks(Long userId, String filterRole, Pageable pageable) throws UserNotFoundException, AuthenticationException {
         User user;
-        if (userId != null) {
-            user = userService.findById(userId);
-        } else {
+        if (userId == 0) {
             user = userService.getCurrentUser();
+        } else {
+            user = userService.findById(userId);
         }
 
         Page<Task> tasks;
