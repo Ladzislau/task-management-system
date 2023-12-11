@@ -42,13 +42,15 @@ public class CommentService {
         this.conversionService = conversionService;
     }
 
-    public CreateCommentResponse postComment(Long taskId, CreateCommentRequest createCommentRequest) throws TaskNotFoundException {
+    public CreateCommentResponse postComment(Long taskId, CreateCommentRequest createCommentRequest) throws TaskNotFoundException, UserNotFoundException, AuthenticationException {
+        User currentUser = userService.getCurrentUser();
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Ошибка публикации комментария", "Задача, к которой вы хотите оставить комментарий не существует!"));
 
         Comment comment = conversionService.convert(createCommentRequest, Comment.class);
         comment.setCreatedAt(new Date());
         comment.setRelatedTask(task);
+        comment.setAuthor(currentUser);
 
         Comment savedComment = commentRepository.save(comment);
 

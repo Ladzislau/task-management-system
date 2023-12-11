@@ -70,10 +70,10 @@ public class TaskController {
     })
     @Operation(
             summary = "Получения задач, связанных с пользователем",
-            description = "Задачи другого пользователя может получить любой аутентифицированный пользователь. " +
-                    "Полученные задачи можно фильтровать по 2-м критериям, либо же не использовать фильтр" +
-                    "\n 1) пользователь является автором задачи " +
-                    "\n 2) пользователь является исполнителем задачи",
+            description = """
+                    Задачи другого пользователя может получить любой аутентифицированный пользователь. Полученные задачи можно фильтровать по 2-м критериям, либо же не использовать фильтр
+                     1) пользователь является автором задачи\s
+                     2) пользователь является исполнителем задачи""",
             responses = {
                     @ApiResponse(
                             description = "Задачи пользователя успешно получены",
@@ -417,7 +417,7 @@ public class TaskController {
     @PostMapping("/{taskId}/comments")
     public ResponseEntity<CreateCommentResponse> postComment(
             @PathVariable("taskId") Long taskId,
-            @RequestBody @Valid CreateCommentRequest createCommentRequest) throws TaskNotFoundException {
+            @RequestBody @Valid CreateCommentRequest createCommentRequest) throws TaskNotFoundException, UserNotFoundException, AuthenticationException {
 
         CreateCommentResponse response = commentService.postComment(taskId, createCommentRequest);
         return ResponseEntity.ok(response);
@@ -538,14 +538,14 @@ public class TaskController {
 
     @Parameter(
             name = "taskId",
-            description = "ID задачи, комментарий к которой вы хотите отредактировать",
+            description = "ID задачи, комментарий к которой вы хотите удалить",
             required = true,
             in = ParameterIn.PATH,
             schema = @Schema(type = "integer", format = "int64")
     )
     @Parameter(
             name = "commentId",
-            description = "ID комментария, которой вы хотите отредактировать",
+            description = "ID комментария, которой вы хотите удалить",
             required = true,
             in = ParameterIn.PATH,
             schema = @Schema(type = "integer", format = "int64")
