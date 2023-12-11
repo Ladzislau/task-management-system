@@ -72,7 +72,7 @@ public class Task {
 
 
     public enum Priority {
-        LOW, MEDIUM, HIGH, CRITICAL;
+        LOW, MEDIUM, HIGH, CRITICAL
     }
 
 
