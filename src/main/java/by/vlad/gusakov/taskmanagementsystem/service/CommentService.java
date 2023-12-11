@@ -90,11 +90,12 @@ public class CommentService {
     }
 
     public CommentResponse getCommentById(Long taskId, Long commentId) throws TaskNotFoundException, CommentNotFoundException {
-        taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException("Невозможно загрузить комментарий", "Задача, для которой вы хотите загрузить комментарий, не существует!"));
-
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("Невозможно загрузить комментарий (id)", "Комментария не существует!"));
+
+        taskRepository.findByIdAndCommentsContaining(taskId, comment)
+                .orElseThrow(() -> new CommentNotFoundException("Невозможно загрузить комментарий", "У задачи, для которой вы хотите загрузить комментарий, нет комментария с таким ID!"));
+
         return conversionService.convert(comment, CommentResponse.class);
     }
 

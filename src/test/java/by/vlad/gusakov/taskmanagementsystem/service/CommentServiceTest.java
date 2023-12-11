@@ -191,8 +191,8 @@ class CommentServiceTest {
         Long commentId = 1L;
         CommentResponse expectedResponse = new CommentResponse(1L, "test", new Date(), taskId);
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(testTask));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(testComment));
+        when(taskRepository.findByIdAndCommentsContaining(taskId, testComment)).thenReturn(Optional.of(testTask));
         when(conversionService.convert(testComment, CommentResponse.class)).thenReturn(expectedResponse);
 
         CommentResponse response = commentService.getCommentById(taskId, commentId);
@@ -202,14 +202,15 @@ class CommentServiceTest {
     }
 
     @Test
-    void getCommentById_taskNotFound_shouldThrowTaskNotFoundException() {
+    void getCommentById_taskNotFound_shouldThrowCommentNotFoundException() {
         Long taskId = 1L;
         Long commentId = 1L;
+        Comment comment = mock(Comment.class);
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+        when(commentRepository.findById(any())).thenReturn(Optional.of(comment));
+        when(taskRepository.findByIdAndCommentsContaining(taskId, comment)).thenReturn(Optional.empty());
 
-        assertThrows(TaskNotFoundException.class, () -> commentService.getCommentById(taskId, commentId));
-        verify(commentRepository, never()).findById(commentId);
+        assertThrows(CommentNotFoundException.class, () -> commentService.getCommentById(taskId, commentId));
     }
 
     @Test
