@@ -10,6 +10,8 @@ public class CommentUtil {
 
     public void initializeUpdatedCommentFields(Comment updatedComment, Comment oldComment) {
         updatedComment.setId(oldComment.getId());
+        updatedComment.setRelatedTask(oldComment.getRelatedTask());
+        updatedComment.setCreatedAt(oldComment.getCreatedAt());
         updatedComment.setAuthor(oldComment.getAuthor());
     }
 
