@@ -11,7 +11,6 @@ import by.vlad.gusakov.taskmanagementsystem.payload.request.task.UpdateTaskReque
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.task.*;
 import by.vlad.gusakov.taskmanagementsystem.repository.TaskRepository;
 import by.vlad.gusakov.taskmanagementsystem.util.TaskUtil;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -49,7 +48,8 @@ public class TaskService {
         }
 
         Page<Task> tasks;
-        switch (filterRole.toUpperCase()) {
+        filterRole = filterRole != null ? filterRole.toUpperCase() : "";
+        switch (filterRole) {
             case "AUTHOR" -> tasks = taskRepository.findByAuthorOrderByCreatedAtDesc(user, pageable);
             case "ASSIGNEE" -> tasks = taskRepository.findByAssigneeOrderByCreatedAtDesc(user, pageable);
             default -> tasks = taskRepository.findByAuthorOrAssigneeOrderByCreatedAtDesc(user, user, pageable);
