@@ -10,7 +10,7 @@ public class UpdateCommentRequestToCommentEntity implements Converter<UpdateComm
     @Override
     public Comment convert(UpdateCommentRequest source) {
         Comment comment = new Comment();
-        comment.setText(source.getText());
+        comment.setText(source.getUpdatedText());
 
         return comment;
     }

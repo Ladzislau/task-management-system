@@ -20,5 +20,5 @@ public class UpdateCommentRequest {
     )
     @NotEmpty(message = "Комментарий не может быть пустым")
     @Size(max = 400, message = "Длина комментария не может превышать 400 символов")
-    private String text;
+    private String updatedText;
 }
