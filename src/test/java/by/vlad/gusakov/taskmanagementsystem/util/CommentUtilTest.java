@@ -35,7 +35,7 @@ class CommentUtilTest {
     }
 
     @Test
-    void checkUserPermissionsToModifyComment_shouldCheckPermissionsAndThrowException() throws Exception {
+    void checkUserPermissionsToModifyComment_shouldCheckPermissionsAndThrowException(){
         User authorizedUser = new User();
         authorizedUser.setId(1L);
 
@@ -43,7 +43,7 @@ class CommentUtilTest {
         Comment comment = new Comment();
         comment.setAuthor(commentAuthor);
 
-        commentUtil.checkUserPermissionsToModifyComment(commentAuthor, comment);
+        assertDoesNotThrow(() -> commentUtil.checkUserPermissionsToModifyComment(commentAuthor, comment));
 
         assertThrows(UnauthorizedModificationException.class, () ->
                 commentUtil.checkUserPermissionsToModifyComment(authorizedUser, comment));
