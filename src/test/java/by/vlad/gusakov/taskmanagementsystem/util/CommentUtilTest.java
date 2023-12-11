@@ -3,13 +3,14 @@ package by.vlad.gusakov.taskmanagementsystem.util;
 
 import by.vlad.gusakov.taskmanagementsystem.exception.UnauthorizedModificationException;
 import by.vlad.gusakov.taskmanagementsystem.model.Comment;
+import by.vlad.gusakov.taskmanagementsystem.model.Task;
 import by.vlad.gusakov.taskmanagementsystem.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CommentUtilTest {
 
@@ -23,12 +24,14 @@ class CommentUtilTest {
     @Test
     void initializeUpdatedCommentFields_shouldInitializeCommentIdAndAuthor() {
         Comment updatedComment = new Comment();
-        Comment oldComment = new Comment(1L, null, new Date(), new User(), null);
+        Comment oldComment = new Comment(1L, "", new Date(), new User(), new Task());
 
         commentUtil.initializeUpdatedCommentFields(updatedComment, oldComment);
 
-        assert oldComment.getId().equals(updatedComment.getId());
-        assert oldComment.getAuthor().equals(updatedComment.getAuthor());
+        assertEquals(oldComment.getId(), updatedComment.getId());
+        assertEquals(oldComment.getAuthor(), updatedComment.getAuthor());
+        assertNotNull(oldComment.getCreatedAt());
+        assertNotNull(oldComment.getRelatedTask());
     }
 
     @Test
