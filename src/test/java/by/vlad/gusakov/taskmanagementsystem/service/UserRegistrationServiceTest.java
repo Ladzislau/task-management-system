@@ -1,25 +1,25 @@
 package by.vlad.gusakov.taskmanagementsystem.service;
 
-import by.vlad.gusakov.taskmanagementsystem.exception.AuthenticationException;
 import by.vlad.gusakov.taskmanagementsystem.exception.EmailNotUniqueException;
 import by.vlad.gusakov.taskmanagementsystem.exception.UserNotFoundException;
 import by.vlad.gusakov.taskmanagementsystem.model.User;
-import by.vlad.gusakov.taskmanagementsystem.payload.request.auth.AuthenticationRequest;
 import by.vlad.gusakov.taskmanagementsystem.payload.request.auth.UserRegistrationRequest;
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.auth.AuthenticationResponse;
+import by.vlad.gusakov.taskmanagementsystem.repository.UserRepository;
 import by.vlad.gusakov.taskmanagementsystem.util.JWTUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 class UserRegistrationServiceTest {
 
     @MockBean
-    private UserService userService;
+    private UserRepository userRepository;
 
     @MockBean
     private JWTUtil jwtUtil;
@@ -43,11 +43,11 @@ class UserRegistrationServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.userRegistrationService = new UserRegistrationService(userService, jwtUtil, passwordEncoder, conversionService);
+        this.userRegistrationService = new UserRegistrationService(userRepository, jwtUtil, passwordEncoder, conversionService);
     }
 
     @Test
-    void registerUser_validRequest_shouldPerformRegistrationAndReturnAuthenticationResponse() throws Exception {
+    void registerUser_validRequest_shouldPerformRegistrationAndReturnAuthenticationResponse() {
         User user = new User();
         user.setId(1L);
         user.setEmail("test@mail.com");
@@ -56,10 +56,10 @@ class UserRegistrationServiceTest {
         AuthenticationResponse expected = new AuthenticationResponse("jwt-token", 1L);
 
         when(conversionService.convert(registrationRequest, User.class)).thenReturn(user);
-        when(userService.findByEmail(any())).thenThrow(UserNotFoundException.class);
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(user.getPassword())).thenReturn("encoded");
         when(jwtUtil.generateToken(user.getEmail())).thenReturn("jwt-token");
-        when(userService.save(user)).thenReturn(user);
+        when(userRepository.save(user)).thenReturn(user);
 
         assertEquals(expected, userRegistrationService.registerUser(registrationRequest));
     }
@@ -73,8 +73,8 @@ class UserRegistrationServiceTest {
         UserRegistrationRequest registrationRequest = new UserRegistrationRequest();
 
         when(conversionService.convert(registrationRequest, User.class)).thenReturn(user);
-        when(userService.findByEmail(any())).thenReturn(user);
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 
-        assertThrows(EmailNotUniqueException.class,() -> userRegistrationService.registerUser(registrationRequest));
+        assertThrows(EmailNotUniqueException.class, () -> userRegistrationService.registerUser(registrationRequest));
     }
 }
