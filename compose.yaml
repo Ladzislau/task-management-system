@@ -1,23 +1,37 @@
 version: '3'
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile-dev
-    restart: always
+  database:
+    image: mysql:8.3.0
+    restart: on-failure
     ports:
-      - '8080:8080'
-    volumes:
-      - ./src:/app/src
-      - ./pom.xml:/app/pom.xml
-  mysql:
-    image: 'mysql:latest'
-    restart: always
+      - "3306:3306"
     environment:
-      - 'MYSQL_DATABASE=task_db'
-      - 'MYSQL_ROOT_PASSWORD=root1234'
-    ports:
-      - '3306'
+      - "MYSQL_DATABASE=task_db"
+      - "MYSQL_ROOT_PASSWORD=root1234"
     volumes:
-      - ./mysql/init-scripts:/docker-entrypoint-initdb.d
+      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      backend:
+        aliases:
+          - "database"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: ladzislau/task-management-system:0.0.1-SNAPSHOT
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
