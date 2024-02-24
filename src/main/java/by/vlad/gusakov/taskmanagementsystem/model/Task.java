@@ -58,11 +58,11 @@ public class Task {
     @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
     private List<Comment> comments;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignee_id", referencedColumnName = "id")
     private User assignee;
 
