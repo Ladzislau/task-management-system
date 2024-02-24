@@ -14,7 +14,15 @@
    git clone https://github.com/Ladzislau/task-management-system
    cd task-management-system
    ```
-**3. Запустите Docker Compose:**
+
+**3. Создайте Docker Image приложения:**
+
+   ```bash
+./mvnw spring-boot:build-image
+   ```
+Эта команда создаст образ приложения на вашем локальном пк.
+
+**4. Запустите Docker Compose:**
     
    ```bash
 docker-compose up --build
@@ -22,6 +30,6 @@ docker-compose up --build
    Эта команда создаст и запустит два контейнера: само приложение и mysql в качестве БД.
 
 
-**4. Документация Swagger UI:**
+**5. Документация Swagger UI:**
 
  Откройте веб-браузер и перейдите по адресу http://localhost:8080/swagger-ui/index.html, чтобы получить доступ к Swagger UI, где вы можете изучить API и использовать интерактивную документацию.
