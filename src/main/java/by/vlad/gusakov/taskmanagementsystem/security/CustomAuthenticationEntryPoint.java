@@ -30,7 +30,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         int errorStatus = HttpStatus.INTERNAL_SERVER_ERROR.value();
-        ErrorResponse errorResponse = new ErrorResponse("Ошибка сервера", errorStatus, "Сервер непредвиденно вернул ошибку! Проверьте правильность отправляемых данных, проверьте авторизированы ли вы");
+        ErrorResponse errorResponse = new ErrorResponse("Ошибка сервера", errorStatus, "Сервер непредвиденно вернул ошибку! Проверьте правильность отправляемых данных, проверьте авторизованы ли вы");
 
         response.setStatus(errorStatus);
         response.setCharacterEncoding("UTF-8");

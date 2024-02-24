@@ -1,9 +1,7 @@
 package by.vlad.gusakov.taskmanagementsystem.converter.entityToPayload.comment;
 
 import by.vlad.gusakov.taskmanagementsystem.TestDataFactory;
-import by.vlad.gusakov.taskmanagementsystem.converter.payloadToEntity.comment.CreateCommentRequestToCommentEntity;
 import by.vlad.gusakov.taskmanagementsystem.model.Comment;
-import by.vlad.gusakov.taskmanagementsystem.payload.request.comment.CreateCommentRequest;
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.comment.CommentResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

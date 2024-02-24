@@ -1,8 +1,5 @@
 package by.vlad.gusakov.taskmanagementsystem.controller;
 
-import by.vlad.gusakov.taskmanagementsystem.exception.AuthenticationException;
-import by.vlad.gusakov.taskmanagementsystem.exception.UserNotFoundException;
-import by.vlad.gusakov.taskmanagementsystem.exception.EmailNotUniqueException;
 import by.vlad.gusakov.taskmanagementsystem.payload.request.auth.AuthenticationRequest;
 import by.vlad.gusakov.taskmanagementsystem.payload.request.auth.UserRegistrationRequest;
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.auth.AuthenticationResponse;
@@ -11,28 +8,22 @@ import by.vlad.gusakov.taskmanagementsystem.service.AuthenticationService;
 import by.vlad.gusakov.taskmanagementsystem.service.UserRegistrationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthenticationService authenticationService;
 
     private final UserRegistrationService userRegistrationService;
-
-    @Autowired
-    public AuthController(AuthenticationService authenticationService, UserRegistrationService userRegistrationService) {
-        this.authenticationService = authenticationService;
-        this.userRegistrationService = userRegistrationService;
-    }
 
     @Operation(
             summary = "Регистрация пользователя",
@@ -58,7 +49,7 @@ public class AuthController {
     )
     @PostMapping("/registration")
     public ResponseEntity<AuthenticationResponse> performRegistration(
-            @RequestBody @Valid UserRegistrationRequest userRegistrationRequest) throws EmailNotUniqueException {
+            @RequestBody @Valid UserRegistrationRequest userRegistrationRequest) {
 
         AuthenticationResponse response = userRegistrationService.registerUser(userRegistrationRequest);
         return ResponseEntity.ok(response);
@@ -89,7 +80,7 @@ public class AuthController {
     )
     @PatchMapping("/login")
     public ResponseEntity<AuthenticationResponse> performLogin(
-            @RequestBody @Valid AuthenticationRequest authenticationRequest) throws AuthenticationException, UserNotFoundException {
+            @RequestBody @Valid AuthenticationRequest authenticationRequest) {
 
         AuthenticationResponse response = authenticationService.loginUser(authenticationRequest);
         return ResponseEntity.ok(response);

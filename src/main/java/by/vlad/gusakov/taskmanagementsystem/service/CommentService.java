@@ -1,6 +1,7 @@
 package by.vlad.gusakov.taskmanagementsystem.service;
 
-import by.vlad.gusakov.taskmanagementsystem.exception.*;
+import by.vlad.gusakov.taskmanagementsystem.exception.CommentNotFoundException;
+import by.vlad.gusakov.taskmanagementsystem.exception.TaskNotFoundException;
 import by.vlad.gusakov.taskmanagementsystem.model.Comment;
 import by.vlad.gusakov.taskmanagementsystem.model.Task;
 import by.vlad.gusakov.taskmanagementsystem.model.User;
@@ -10,7 +11,7 @@ import by.vlad.gusakov.taskmanagementsystem.payload.responce.comment.*;
 import by.vlad.gusakov.taskmanagementsystem.repository.CommentRepository;
 import by.vlad.gusakov.taskmanagementsystem.repository.TaskRepository;
 import by.vlad.gusakov.taskmanagementsystem.util.CommentUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -33,16 +35,7 @@ public class CommentService {
 
     private final ConversionService conversionService;
 
-    @Autowired
-    public CommentService(CommentRepository commentRepository, TaskRepository taskRepository, CommentUtil commentUtil, UserService userService, ConversionService conversionService) {
-        this.commentRepository = commentRepository;
-        this.taskRepository = taskRepository;
-        this.commentUtil = commentUtil;
-        this.userService = userService;
-        this.conversionService = conversionService;
-    }
-
-    public CreateCommentResponse postComment(Long taskId, CreateCommentRequest createCommentRequest) throws TaskNotFoundException, UserNotFoundException, AuthenticationException {
+    public CreateCommentResponse postComment(Long taskId, CreateCommentRequest createCommentRequest) {
         User currentUser = userService.getCurrentUser();
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Ошибка публикации комментария", "Задача, к которой вы хотите оставить комментарий не существует!"));
@@ -58,7 +51,7 @@ public class CommentService {
                 conversionService.convert(savedComment, CommentResponse.class));
     }
 
-    public UpdateCommentResponse updateComment(Long taskId, Long commentId, UpdateCommentRequest updateCommentRequest) throws CommentNotFoundException, UnauthorizedModificationException, UserNotFoundException, AuthenticationException, TaskNotFoundException {
+    public UpdateCommentResponse updateComment(Long taskId, Long commentId, UpdateCommentRequest updateCommentRequest){
         taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Ошибка редактирования комментария", "Задача, комментарий к которой вы отредактировать обновить, не существует!"));
 
@@ -77,7 +70,7 @@ public class CommentService {
                 conversionService.convert(updatedComment, CommentResponse.class));
     }
 
-    public DeleteCommentResponse deleteComment(Long commentId) throws CommentNotFoundException, UnauthorizedModificationException, UserNotFoundException, AuthenticationException {
+    public DeleteCommentResponse deleteComment(Long commentId){
         User currentUser = userService.getCurrentUser();
         Comment commentToDelete = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("Ошибка удаления комментария", "Комментарий, который вы хотите удалить, не существует!"));
@@ -89,7 +82,7 @@ public class CommentService {
         return new DeleteCommentResponse("Комментарий удален!");
     }
 
-    public CommentResponse getCommentById(Long taskId, Long commentId) throws TaskNotFoundException, CommentNotFoundException {
+    public CommentResponse getCommentById(Long taskId, Long commentId){
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("Невозможно загрузить комментарий (id)", "Комментария не существует!"));
 
@@ -99,7 +92,7 @@ public class CommentService {
         return conversionService.convert(comment, CommentResponse.class);
     }
 
-    public CommentPageResponse getCommentsByTask(Long taskId, Pageable pageable) throws TaskNotFoundException {
+    public CommentPageResponse getCommentsByTask(Long taskId, Pageable pageable){
         Task relatedTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Невозможно загрузить комментарии", "Задача, для которой вы хотите загрузить комментарии, не существует!"));
 
@@ -111,8 +104,5 @@ public class CommentService {
         return new CommentPageResponse(pageable.getPageNumber(), comments.getTotalPages(),
                 comments.getTotalElements(), commentResponses);
     }
-
-
-
 
 }

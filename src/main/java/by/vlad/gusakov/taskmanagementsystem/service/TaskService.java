@@ -1,9 +1,6 @@
 package by.vlad.gusakov.taskmanagementsystem.service;
 
-import by.vlad.gusakov.taskmanagementsystem.exception.AuthenticationException;
 import by.vlad.gusakov.taskmanagementsystem.exception.TaskNotFoundException;
-import by.vlad.gusakov.taskmanagementsystem.exception.UnauthorizedModificationException;
-import by.vlad.gusakov.taskmanagementsystem.exception.UserNotFoundException;
 import by.vlad.gusakov.taskmanagementsystem.model.Task;
 import by.vlad.gusakov.taskmanagementsystem.model.User;
 import by.vlad.gusakov.taskmanagementsystem.payload.request.task.CreateTaskRequest;
@@ -11,7 +8,7 @@ import by.vlad.gusakov.taskmanagementsystem.payload.request.task.UpdateTaskReque
 import by.vlad.gusakov.taskmanagementsystem.payload.responce.task.*;
 import by.vlad.gusakov.taskmanagementsystem.repository.TaskRepository;
 import by.vlad.gusakov.taskmanagementsystem.util.TaskUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TaskService {
 
     private final TaskRepository taskRepository;
@@ -31,15 +29,8 @@ public class TaskService {
 
     private final TaskUtil taskUtil;
 
-    @Autowired
-    public TaskService(TaskRepository taskRepository, UserService userService, ConversionService conversionService, TaskUtil taskUtil) {
-        this.taskRepository = taskRepository;
-        this.userService = userService;
-        this.conversionService = conversionService;
-        this.taskUtil = taskUtil;
-    }
 
-    public TaskPageResponse getUserTasks(Long userId, String filterRole, Pageable pageable) throws UserNotFoundException, AuthenticationException {
+    public TaskPageResponse getUserTasks(Long userId, String filterRole, Pageable pageable) {
         User user;
         if (userId == 0) {
             user = userService.getCurrentUser();
@@ -61,14 +52,14 @@ public class TaskService {
         return new TaskPageResponse(pageable.getPageNumber(), tasks.getTotalPages(), tasks.getTotalElements(), taskResponses);
     }
 
-    public TaskResponse getTaskById(Long taskId) throws TaskNotFoundException {
+    public TaskResponse getTaskById(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Ошибка загрузки задачи", "Задачи не существует!"));
 
         return conversionService.convert(task, TaskResponse.class);
     }
 
-    public CreateTaskResponse createTask(CreateTaskRequest createTaskRequest) throws UserNotFoundException, AuthenticationException {
+    public CreateTaskResponse createTask(CreateTaskRequest createTaskRequest) {
         User currentUser = userService.getCurrentUser();
 
         Task task = conversionService.convert(createTaskRequest, Task.class);
@@ -80,7 +71,7 @@ public class TaskService {
                 conversionService.convert(savedTask, TaskResponse.class));
     }
 
-    public UpdateTaskResponse updateTask(Long taskId, UpdateTaskRequest updateTaskRequest) throws UnauthorizedModificationException, UserNotFoundException, TaskNotFoundException, AuthenticationException {
+    public UpdateTaskResponse updateTask(Long taskId, UpdateTaskRequest updateTaskRequest) {
         User currentUser = userService.getCurrentUser();
         Task oldTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Ошибка изменения задачи (id)", "Задача, которую вы хотите изменить, не существует"));
@@ -95,7 +86,7 @@ public class TaskService {
         return new UpdateTaskResponse("Задача успешно обновлена!", conversionService.convert(updatedTask, TaskResponse.class));
     }
 
-    public DeleteTaskResponse deleteTaskById(Long taskId) throws UserNotFoundException, TaskNotFoundException, UnauthorizedModificationException, AuthenticationException {
+    public DeleteTaskResponse deleteTaskById(Long taskId) {
         User currentUser = userService.getCurrentUser();
         Task taskToDelete = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Ошибка удаления задачи (id)", "Задача, которую вы хотите удалить, не существует!"));
